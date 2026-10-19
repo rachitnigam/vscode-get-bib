@@ -1,0 +1,116 @@
+{
+  "name": "scholar-bib",
+  "displayName": "Scholar Bib",
+  "description": "Search Google Scholar or DBLP from a side pane and append BibTeX entries to your .bib file.",
+  "version": "0.1.0",
+  "publisher": "rachitnigam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rachitnigam/vscode-get-bib"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "bibtex",
+    "latex",
+    "google scholar",
+    "dblp",
+    "citation"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "scholarBib",
+          "title": "Scholar",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "scholarBib": [
+        {
+          "type": "webview",
+          "id": "scholarBib.searchView",
+          "name": "Search"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "scholarBib.search",
+        "title": "Scholar Bib: Search Paper"
+      }
+    ],
+    "configuration": {
+      "title": "Scholar Bib",
+      "properties": {
+        "scholarBib.defaultProvider": {
+          "type": "string",
+          "enum": [
+            "scholar",
+            "dblp"
+          ],
+          "default": "scholar",
+          "description": "Provider selected when the search pane opens."
+        },
+        "scholarBib.keyScheme": {
+          "type": "string",
+          "enum": [
+            "authorYearTitle",
+            "provider"
+          ],
+          "enumDescriptions": [
+            "<lastname><year><firstTitleWord>, lowercase ASCII.",
+            "Keep the key returned by the provider."
+          ],
+          "default": "authorYearTitle",
+          "description": "How citation keys are generated for added entries."
+        },
+        "scholarBib.keepProviderKeys": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep the provider's citation key instead of regenerating it. Equivalent to keyScheme = provider."
+        },
+        "scholarBib.maxResults": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 50,
+          "description": "Maximum number of search results to show."
+        },
+        "scholarBib.userAgent": {
+          "type": "string",
+          "default": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+          "description": "User-Agent header sent to Google Scholar."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit -p . && node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "node-html-parser": "^9.0.5"
+  }
+}
