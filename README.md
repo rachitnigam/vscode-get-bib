@@ -2,6 +2,20 @@
 
 Search for a paper from a VS Code side pane and append its BibTeX entry to your `.bib` file.
 
+## Installation
+
+Build and install a local `.vsix`:
+
+```sh
+npm install
+npm run build
+npm run package   # produces scholar-bib-<version>.vsix
+code --install-extension scholar-bib-*.vsix
+```
+
+Then run **Developer: Reload Window**. Alternatively, in the Extensions view choose `…` →
+**Install from VSIX…** and select the file.
+
 ## Usage
 
 1. Open the **Scholar** view in the activity bar, or run **Scholar Bib: Search Paper** from the
