@@ -105,7 +105,8 @@ export function findBibLink(citeHtml: string): string | undefined {
 }
 
 export function isBlockedPage(url: string, status: number, body: string): boolean {
-  if (status === 429) return true;
+  // Scholar answers throttled or flagged clients with 429 or a bare 403.
+  if (status === 429 || status === 403) return true;
   if (/\/sorry\//.test(url) || /[?&]continue=/.test(url) && /sorry/.test(url)) return true;
   // A BibTeX body may legitimately mention "reCAPTCHA" or "unusual traffic" in a title.
   if (body.trimStart().startsWith('@')) return false;

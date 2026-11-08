@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 
-export type ProviderId = 'scholar' | 'dblp';
+/** Selectable providers. `auto` is a fallback chain; a Result's provider is never `auto`. */
+export type ProviderId = 'auto' | 'crossref' | 'openalex' | 'arxiv' | 'scholar' | 'dblp';
 
-export const PROVIDER_IDS: readonly ProviderId[] = ['scholar', 'dblp'];
+export const PROVIDER_IDS: readonly ProviderId[] = ['auto', 'crossref', 'openalex', 'arxiv', 'scholar', 'dblp'];
 
 export interface Result {
   id: string;
@@ -36,7 +37,7 @@ export class BlockedError extends Error {
 
 export class ScholarBlockedError extends BlockedError {
   constructor(url: string) {
-    super('scholar', url, 'Google Scholar blocked the request (CAPTCHA / unusual traffic). Try again later, or switch to DBLP.');
+    super('scholar', url, 'Google Scholar blocked the request (CAPTCHA / unusual traffic). Try again later, or switch to Crossref.');
     this.name = 'ScholarBlockedError';
   }
 }
@@ -45,6 +46,14 @@ export class DblpBlockedError extends BlockedError {
   constructor(url: string, status: number) {
     super('dblp', url, `DBLP is rate-limiting or showing a bot check (HTTP ${status}). Try again later.`);
     this.name = 'DblpBlockedError';
+  }
+}
+
+/** An API answered 429 (rate limit). */
+export class RateLimitedError extends BlockedError {
+  constructor(provider: ProviderId, url: string) {
+    super(provider, url, `${provider} is rate-limiting requests (HTTP 429). Try again later.`);
+    this.name = 'RateLimitedError';
   }
 }
 

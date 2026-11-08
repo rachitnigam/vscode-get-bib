@@ -8,6 +8,15 @@ import { assertValidResults, BlockedError, Provider, ProviderId, Result, toResul
 import { withTimeout } from '../providers/http';
 import { ForOp, FromWebview, parseFromWebview, StatusKind, ToWebview } from './messages';
 
+const PROVIDER_LABELS: Record<ProviderId, string> = {
+  auto: 'Crossref, OpenAlex and arXiv',
+  crossref: 'Crossref',
+  openalex: 'OpenAlex',
+  arxiv: 'arXiv',
+  scholar: 'Google Scholar',
+  dblp: 'DBLP',
+};
+
 export const VIEW_ID = 'scholarBib.searchView';
 
 const SEARCH_TIMEOUT_MS = 30_000;
@@ -125,7 +134,7 @@ export class SearchViewProvider implements vscode.WebviewViewProvider, vscode.Di
     this.searchAbort?.abort();
     const abort = new AbortController();
     this.searchAbort = abort;
-    this.status(`Searching ${providerId === 'scholar' ? 'Google Scholar' : 'DBLP'}…`, 'busy');
+    this.status(`Searching ${PROVIDER_LABELS[providerId]}…`, 'busy');
     try {
       const results = await withTimeout('Search', SEARCH_TIMEOUT_MS, abort, (signal) => this.provider(providerId).search(q, signal));
       if (this.searchAbort !== abort) return;
@@ -139,7 +148,7 @@ export class SearchViewProvider implements vscode.WebviewViewProvider, vscode.Di
     }
   }
 
-  /** Provider BibTeX, or `raw: undefined` (synthesize) when Scholar's export fails. */
+  /** Provider BibTeX, or `raw: undefined` (synthesize) when the provider's export fails (except DBLP). */
   private async fetchBibtex(result: Result): Promise<Fetched> {
     try {
       const raw = await withTimeout('BibTeX request', BIBTEX_TIMEOUT_MS, undefined, (signal) =>
@@ -147,8 +156,11 @@ export class SearchViewProvider implements vscode.WebviewViewProvider, vscode.Di
       );
       return { raw };
     } catch (e) {
-      if (result.provider !== 'scholar') throw e;
-      return { raw: undefined, warning: `Scholar BibTeX export failed (${describe(e)}). Inserted a synthesized entry; please check it.` };
+      if (result.provider === 'dblp') throw e;
+      return {
+        raw: undefined,
+        warning: `${PROVIDER_LABELS[result.provider]} BibTeX export failed (${describe(e)}). Inserted a synthesized entry; please check it.`,
+      };
     }
   }
 
@@ -235,8 +247,12 @@ export class SearchViewProvider implements vscode.WebviewViewProvider, vscode.Di
 </header>
 <form id="search-form" class="search">
   <select id="provider" aria-label="Provider">
-    <option value="scholar">Google Scholar</option>
-    <option value="dblp">DBLP</option>
+    <option value="auto">Auto (Crossref → OpenAlex → arXiv)</option>
+    <option value="crossref">Crossref</option>
+    <option value="openalex">OpenAlex</option>
+    <option value="arxiv">arXiv</option>
+    <option value="scholar">Google Scholar (may be blocked)</option>
+    <option value="dblp">DBLP (may be blocked)</option>
   </select>
   <div class="search-row">
     <input id="query" type="search" placeholder="Paper title…" aria-label="Search query" autocomplete="off">

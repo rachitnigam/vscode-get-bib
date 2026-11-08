@@ -1,7 +1,7 @@
 {
   "name": "scholar-bib",
   "displayName": "Scholar Bib",
-  "description": "Search Google Scholar or DBLP from a side pane and append BibTeX entries to your .bib file.",
+  "description": "Search Crossref, OpenAlex, arXiv, Google Scholar or DBLP from a side pane and append BibTeX entries to your .bib file.",
   "version": "0.1.0",
   "publisher": "rachitnigam",
   "license": "MIT",
@@ -55,10 +55,22 @@
         "scholarBib.defaultProvider": {
           "type": "string",
           "enum": [
+            "auto",
+            "crossref",
+            "openalex",
+            "arxiv",
             "scholar",
             "dblp"
           ],
-          "default": "scholar",
+          "enumDescriptions": [
+            "Try Crossref, then OpenAlex, then arXiv; use the first that finds results.",
+            "Crossref (official API, BibTeX via doi.org).",
+            "OpenAlex (official API, BibTeX via doi.org when the work has a DOI).",
+            "arXiv preprints (BibTeX built from metadata).",
+            "Google Scholar (scraped; often blocked).",
+            "DBLP (often shows a bot check)."
+          ],
+          "default": "auto",
           "description": "Provider selected when the search pane opens."
         },
         "scholarBib.keyScheme": {

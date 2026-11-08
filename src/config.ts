@@ -14,7 +14,7 @@ export function readConfig(): Config {
   const provider = c.get<string>('defaultProvider');
   const maxResults = Math.round(c.get<number>('maxResults') ?? 10);
   return {
-    defaultProvider: isProviderId(provider) ? provider : 'scholar',
+    defaultProvider: isProviderId(provider) ? provider : 'auto',
     keepProviderKeys: c.get<string>('keyScheme') === 'provider' || c.get<boolean>('keepProviderKeys') === true,
     maxResults: Math.min(Math.max(maxResults, 1), 50),
     userAgent: c.get<string>('userAgent') || DEFAULT_USER_AGENT,

@@ -72,6 +72,8 @@ describe('block detection', () => {
   it('detects the /sorry/ redirect and 429', () => {
     expect(isBlockedPage('https://www.google.com/sorry/index?continue=https://scholar.google.com/', 200, '')).toBe(true);
     expect(isBlockedPage('https://scholar.google.com/scholar', 429, '')).toBe(true);
+    expect(isBlockedPage('https://scholar.google.com/scholar', 403, '')).toBe(true);
+    expect(isBlockedPage('https://scholar.google.com/scholar', 403, '<html>Forbidden</html>')).toBe(true);
   });
   it('does not flag a normal result page', () => {
     expect(isBlockedPage('https://scholar.google.com/scholar?q=x', 200, fixture('scholar-attention.html'))).toBe(false);
